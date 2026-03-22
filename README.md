@@ -1,6 +1,6 @@
-# getbased OpenClaw Skill
+# getbased OpenClaw Plugin
 
-An [OpenClaw](https://openclaw.ai) skill that lets you chat about your blood work data from [getbased](https://getbased.health) over any messenger (WhatsApp, Telegram, Discord, etc.).
+An [OpenClaw](https://openclaw.ai) plugin that lets you chat about your blood work data from [getbased](https://getbased.health) over any messenger (WhatsApp, Telegram, Discord, etc.).
 
 ## How it works
 
@@ -13,13 +13,21 @@ getbased (browser)
 Evolu Relay (sync.getbased.health)
   └── stores encrypted blobs
 
-This Skill (on your OpenClaw server)
+This Plugin (on your OpenClaw server)
   ├── pulls data using read-only key (no mnemonic needed)
   ├── decrypts locally, builds lab context
-  └── model interprets and responds in your messenger
+  └── model calls tools and responds in your messenger
 ```
 
-Your mnemonic never leaves your browser. The skill uses a derived read-only key that can decrypt and pull data but cannot write, restore your identity, or derive the mnemonic.
+Your mnemonic never leaves your browser. The plugin uses a derived read-only key (`SharedReadonlyOwner`) that can decrypt and pull data but cannot write, restore your identity, or derive the mnemonic.
+
+## Tools
+
+| Tool | Description |
+|---|---|
+| `getbased_lab_context` | Full lab summary — same context the getbased AI chat uses |
+| `getbased_marker_value` | Latest value + trend for a specific biomarker |
+| `getbased_list_profiles` | List all available profiles |
 
 ## Setup
 
@@ -27,10 +35,13 @@ Your mnemonic never leaves your browser. The skill uses a derived read-only key 
 
 Go to **Settings > Data > Messenger Access** and click **Generate read-only key**. Copy the key.
 
-### 2. Install the skill
+### 2. Install the plugin
 
 ```bash
-cp -r . ~/.openclaw/skills/getbased
+cd ~/.openclaw/plugins
+git clone https://github.com/elkimek/getbased-openclaw.git
+cd getbased-openclaw
+npm install && npm run build
 ```
 
 ### 3. Configure
@@ -39,13 +50,9 @@ Add to `~/.openclaw/openclaw.json`:
 
 ```json
 {
-  "skills": {
-    "entries": {
-      "getbased": {
-        "env": {
-          "GETBASED_READONLY_KEY": "your-key-here"
-        }
-      }
+  "plugins": {
+    "getbased": {
+      "readonlyKey": "your-key-here"
     }
   }
 }
@@ -61,24 +68,19 @@ Just ask about your labs in any connected messenger:
 
 ## Security
 
-- **Read-only**: the skill cannot modify your data — enforced at the Evolu protocol level
+- **Read-only**: the plugin cannot modify your data — enforced at the Evolu protocol level
 - **No mnemonic exposure**: the read-only key is a one-way derivation from your mnemonic
 - **Self-hosted**: both the OpenClaw instance and the Evolu relay run on your own infrastructure
 - **Revocable**: regenerate the key in getbased to revoke access
 
 ## Roadmap
 
-- [x] Skill definition (SKILL.md)
-- [ ] Evolu read-only client (fetch-context.js)
+- [x] Plugin scaffold with tool definitions
+- [x] Companion SKILL.md for model guidance
+- [ ] Evolu read-only client (SharedReadonlyOwner → relay → decrypt)
 - [ ] Lab context builder (port of buildLabContext)
 - [ ] v2: Write access — drop PDFs in messenger, parsed and synced to getbased
 
-## Architecture
-
-The read-only key encodes an Evolu `SharedReadonlyOwner` — `id + encryptionKey` without `writeKey`. This is a first-class Evolu concept: the sync protocol accepts connections without a write key and serves data but rejects mutations.
-
-The fetch script connects to the relay via WebSocket, pulls encrypted CRDT messages, decrypts them with XChaCha20-Poly1305, and reconstructs the profile data. No intermediate API server needed.
-
 ## License
 
-GPL-3.0 — same as getbased.
+GPL-3.0

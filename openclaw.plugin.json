@@ -1,0 +1,21 @@
+{
+  "name": "getbased",
+  "version": "0.1.0",
+  "description": "Query and interpret blood work data from getbased health dashboard",
+  "main": "dist/index.js",
+  "config": {
+    "type": "object",
+    "properties": {
+      "readonlyKey": {
+        "type": "string",
+        "description": "Read-only key from getbased Settings > Data > Messenger Access"
+      },
+      "relay": {
+        "type": "string",
+        "description": "Evolu relay URL (default: wss://sync.getbased.health)",
+        "default": "wss://sync.getbased.health"
+      }
+    },
+    "required": ["readonlyKey"]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "getbased-openclaw",
+  "version": "0.1.0",
+  "description": "OpenClaw plugin for querying getbased blood work data over messenger",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
