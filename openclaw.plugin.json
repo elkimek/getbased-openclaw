@@ -6,16 +6,16 @@
   "config": {
     "type": "object",
     "properties": {
-      "readonlyKey": {
+      "token": {
         "type": "string",
-        "description": "Read-only key from getbased Settings > Data > Messenger Access"
+        "description": "Read-only token from getbased Settings > Data > Messenger Access"
       },
-      "relay": {
+      "gateway": {
         "type": "string",
-        "description": "Evolu relay URL (default: wss://sync.getbased.health)",
-        "default": "wss://sync.getbased.health"
+        "description": "Context gateway URL (default: https://sync.getbased.health)",
+        "default": "https://sync.getbased.health"
       }
     },
-    "required": ["readonlyKey"]
+    "required": ["token"]
   }
 }

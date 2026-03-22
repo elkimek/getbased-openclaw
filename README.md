@@ -7,33 +7,31 @@ An [OpenClaw](https://openclaw.ai) plugin that lets you chat about your blood wo
 ```
 getbased (browser)
   ├── your data, your mnemonic
-  ├── generates a read-only key for OpenClaw
-  └── pushes encrypted data to relay
+  ├── generates a read-only token
+  └── pushes lab context to gateway on every save
 
-Evolu Relay (sync.getbased.health)
-  └── stores encrypted blobs
+Context Gateway (sync.getbased.health/api/context)
+  └── stores context text behind token auth
 
 This Plugin (on your OpenClaw server)
-  ├── pulls data using read-only key (no mnemonic needed)
-  ├── decrypts locally, builds lab context
-  └── model calls tools and responds in your messenger
+  ├── fetches context with the token
+  └── model interprets and responds in your messenger
 ```
 
-Your mnemonic never leaves your browser. The plugin uses a derived read-only key (`SharedReadonlyOwner`) that can decrypt and pull data but cannot write, restore your identity, or derive the mnemonic.
+Your mnemonic never leaves your browser. The plugin receives the same lab context text the getbased AI chat uses — not raw data.
 
 ## Tools
 
 | Tool | Description |
 |---|---|
-| `getbased_lab_context` | Full lab summary — same context the getbased AI chat uses |
-| `getbased_marker_value` | Latest value + trend for a specific biomarker |
-| `getbased_list_profiles` | List all available profiles |
+| `getbased_lab_context` | Full lab summary with biomarkers, context cards, supplements, goals |
+| `getbased_list_profiles` | List available profiles |
 
 ## Setup
 
-### 1. Generate a read-only key in getbased
+### 1. Enable messenger access in getbased
 
-Go to **Settings > Data > Messenger Access** and click **Generate read-only key**. Copy the key.
+Go to **Settings > Data > Messenger Access** and toggle it on. Copy the read-only token.
 
 ### 2. Install the plugin
 
@@ -52,7 +50,7 @@ Add to `~/.openclaw/openclaw.json`:
 {
   "plugins": {
     "getbased": {
-      "readonlyKey": "your-key-here"
+      "token": "your-token-here"
     }
   }
 }
@@ -60,7 +58,7 @@ Add to `~/.openclaw/openclaw.json`:
 
 ### 4. Use it
 
-Just ask about your labs in any connected messenger:
+Ask about your labs in any connected messenger:
 
 > "How's my vitamin D?"
 > "What markers are out of range?"
@@ -68,18 +66,10 @@ Just ask about your labs in any connected messenger:
 
 ## Security
 
-- **Read-only**: the plugin cannot modify your data — enforced at the Evolu protocol level
-- **No mnemonic exposure**: the read-only key is a one-way derivation from your mnemonic
-- **Self-hosted**: both the OpenClaw instance and the Evolu relay run on your own infrastructure
-- **Revocable**: regenerate the key in getbased to revoke access
-
-## Roadmap
-
-- [x] Plugin scaffold with tool definitions
-- [x] Companion SKILL.md for model guidance
-- [ ] Evolu read-only client (SharedReadonlyOwner → relay → decrypt)
-- [ ] Lab context builder (port of buildLabContext)
-- [ ] v2: Write access — drop PDFs in messenger, parsed and synced to getbased
+- **Read-only**: the token grants access to lab context text only — no raw data, no write access
+- **Self-hosted**: both the OpenClaw instance and the gateway run on your own infrastructure
+- **Revocable**: regenerate the token in getbased to revoke access instantly
+- **No mnemonic exposure**: the token is independent of your sync mnemonic
 
 ## License
 
