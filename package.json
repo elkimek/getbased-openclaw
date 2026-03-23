@@ -4,6 +4,9 @@
   "description": "OpenClaw plugin for querying getbased blood work data over messenger",
   "type": "module",
   "main": "dist/index.js",
+  "openclaw": {
+    "extensions": ["./dist/index.js"]
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch"

@@ -1,10 +1,12 @@
 {
+  "id": "getbased",
   "name": "getbased",
   "version": "0.1.0",
   "description": "Query and interpret blood work data from getbased health dashboard",
   "main": "dist/index.js",
-  "config": {
+  "configSchema": {
     "type": "object",
+    "additionalProperties": false,
     "properties": {
       "token": {
         "type": "string",
