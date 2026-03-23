@@ -39,7 +39,7 @@ const plugin = {
                 default: 'https://sync.getbased.health',
             },
         },
-        required: ['token'],
+        required: [],
     },
     register(api) {
         const config = api.pluginConfig;

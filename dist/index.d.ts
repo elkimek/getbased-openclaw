@@ -25,7 +25,7 @@ declare const plugin: {
                 default: string;
             };
         };
-        required: string[];
+        required: never[];
     };
     register(api: PluginAPI): void;
 };
