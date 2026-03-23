@@ -6,6 +6,15 @@ interface PluginAPI {
         parameters: object;
         execute: (input: any) => Promise<any>;
     }): void;
+    registerCli(registrar: (ctx: CliContext) => void, opts?: {
+        commands?: string[];
+    }): void;
+}
+interface CliContext {
+    program: any;
+    config: any;
+    workspaceDir: string;
+    logger: any;
 }
 declare const plugin: {
     id: string;
