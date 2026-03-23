@@ -1,6 +1,6 @@
 # getbased OpenClaw Plugin
 
-An [OpenClaw](https://openclaw.ai) plugin that lets you chat about your blood work data from [getbased](https://getbased.health) over any messenger (WhatsApp, Telegram, Discord, etc.).
+An [OpenClaw](https://openclaw.ai) plugin that lets you chat about your blood work data from [getbased](https://getbased.health) over any messenger (SimpleX, Matrix, Signal, etc.).
 
 ## How it works
 
@@ -36,36 +36,27 @@ Go to **Settings > Data > Messenger Access** and toggle it on. Copy the read-onl
 ### 2. Install the plugin
 
 ```bash
-mkdir -p ~/.openclaw/plugins
-cd ~/.openclaw/plugins
+mkdir -p ~/.openclaw/plugins && cd ~/.openclaw/plugins
 git clone https://github.com/elkimek/getbased-openclaw.git
-cd getbased-openclaw
-npm install && npm run build
+cd getbased-openclaw && npm install && npm run build
 openclaw plugins install --link ~/.openclaw/plugins/getbased-openclaw
 ```
 
-### 3. Configure
+### 3. Set your token
 
-Add your token to `~/.openclaw/openclaw.json` under `plugins.entries`:
-
-```json
-{
-  "plugins": {
-    "entries": {
-      "getbased": {
-        "enabled": true,
-        "config": {
-          "token": "your-token-here"
-        }
-      }
-    }
-  }
-}
+```bash
+openclaw getbased-setup
 ```
 
-Then restart the gateway: `systemctl --user restart openclaw-gateway.service`
+This will prompt you to paste your token, verify it against the gateway, and save it to your config.
 
-### 4. Use it
+### 4. Restart the gateway
+
+```bash
+systemctl --user restart openclaw-gateway.service
+```
+
+### 5. Use it
 
 Ask about your labs in any connected messenger:
 
