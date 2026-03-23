@@ -25,10 +25,22 @@ interface GatewayResponse {
 
 async function fetchContext(config: PluginConfig): Promise<GatewayResponse> {
   const gateway = config.gateway || 'https://sync.getbased.health';
-  const res = await fetch(`${gateway}/api/context`, {
-    headers: { 'Authorization': `Bearer ${config.token}` },
-  });
-  return res.json() as Promise<GatewayResponse>;
+  let res: Response;
+  try {
+    res = await fetch(`${gateway}/api/context`, {
+      headers: { 'Authorization': `Bearer ${config.token}` },
+    });
+  } catch (err: any) {
+    return { error: `Failed to reach getbased gateway: ${err.message}` };
+  }
+  if (!res.ok) {
+    return { error: `getbased gateway returned ${res.status} ${res.statusText}` };
+  }
+  try {
+    return await res.json() as GatewayResponse;
+  } catch {
+    return { error: 'getbased gateway returned invalid JSON' };
+  }
 }
 
 const plugin = {
@@ -64,14 +76,9 @@ const plugin = {
       description: 'Get a summary of the user\'s blood work data, health context, supplements, and goals from getbased. Use this when the user asks about their labs, biomarkers, or health trends.',
       parameters: {
         type: 'object',
-        properties: {
-          profileName: {
-            type: 'string',
-            description: 'Profile name to query (optional — context includes the active profile by default)',
-          },
-        },
+        properties: {},
       },
-      execute: async (_input: { profileName?: string }) => {
+      execute: async () => {
         const data = await fetchContext(config);
         if (data.error) return { error: data.error };
         return {

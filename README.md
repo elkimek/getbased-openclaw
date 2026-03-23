@@ -36,25 +36,34 @@ Go to **Settings > Data > Messenger Access** and toggle it on. Copy the read-onl
 ### 2. Install the plugin
 
 ```bash
+mkdir -p ~/.openclaw/plugins
 cd ~/.openclaw/plugins
 git clone https://github.com/elkimek/getbased-openclaw.git
 cd getbased-openclaw
 npm install && npm run build
+openclaw plugins install --link ~/.openclaw/plugins/getbased-openclaw
 ```
 
 ### 3. Configure
 
-Add to `~/.openclaw/openclaw.json`:
+Add your token to `~/.openclaw/openclaw.json` under `plugins.entries`:
 
 ```json
 {
   "plugins": {
-    "getbased": {
-      "token": "your-token-here"
+    "entries": {
+      "getbased": {
+        "enabled": true,
+        "config": {
+          "token": "your-token-here"
+        }
+      }
     }
   }
 }
 ```
+
+Then restart the gateway: `systemctl --user restart openclaw-gateway.service`
 
 ### 4. Use it
 

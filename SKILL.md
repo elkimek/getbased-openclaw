@@ -12,9 +12,7 @@ Query blood work data from getbased (getbased.health). Data is pulled from an E2
 
 ## When to use
 
-Use the `getbased_lab_context` tool when the user asks about their blood work, lab results, biomarkers, health trends, supplements, or health data.
-
-Use `getbased_marker_value` when they ask about a specific marker (e.g. "what's my vitamin D?").
+Use the `getbased_lab_context` tool when the user asks about their blood work, lab results, biomarkers, health trends, supplements, or health data. This includes questions about specific markers (e.g. "what's my vitamin D?") — the full context contains all marker values.
 
 Use `getbased_list_profiles` when they mention multiple profiles or you need to clarify which one.
 
