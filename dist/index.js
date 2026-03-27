@@ -1,5 +1,30 @@
 // getbased OpenClaw Plugin
 // Registers tools for querying blood work data from getbased via context gateway
+function parseSections(context) {
+    const sections = new Map();
+    // Opening tags may have metadata (e.g. [section:hormones updated:2026-03-13])
+    // but closing tags use just the base name (e.g. [/section:hormones])
+    const regex = /\[section:(\S+)([^\]]*)\]([\s\S]*?)\[\/section:\1\]/g;
+    let match;
+    while ((match = regex.exec(context)) !== null) {
+        const baseName = match[1];
+        const meta = match[2].trim();
+        const fullName = meta ? `${baseName} ${meta}` : baseName;
+        sections.set(fullName, match[3].trim());
+    }
+    return sections;
+}
+function buildSectionIndex(context) {
+    const sections = parseSections(context);
+    return Array.from(sections.entries()).map(([rawName, content]) => {
+        const match = rawName.match(/^(\S+)\s+updated:(.+)$/);
+        return {
+            name: match ? match[1] : rawName,
+            ...(match ? { updated: match[2] } : {}),
+            lines: content.split('\n').filter(l => l.trim()).length,
+        };
+    });
+}
 async function fetchContext(config) {
     const gateway = config.gateway || 'https://sync.getbased.health';
     let res;
@@ -111,7 +136,7 @@ const plugin = {
                 type: 'object',
                 properties: {},
             },
-            execute: async () => {
+            execute: async (_toolCallId) => {
                 const data = await fetchContext(config);
                 if (data.error)
                     return { error: data.error };
@@ -128,12 +153,63 @@ const plugin = {
                 type: 'object',
                 properties: {},
             },
-            execute: async () => {
+            execute: async (_toolCallId) => {
                 const data = await fetchContext(config);
                 if (data.error)
                     return { error: data.error };
                 return {
                     profiles: data.profiles || [],
+                    updatedAt: data.updatedAt,
+                };
+            },
+        });
+        api.registerTool({
+            name: 'getbased_section',
+            description: 'Get a specific section of the user\'s health data, or list all available sections. Call with no section name to get the index (section names + line counts). Call with a section name to get just that section\'s content. Sections include: biometrics, hormones, lipids, hematology, biochemistry, supplements, goals, genetics, context cards, etc.',
+            parameters: {
+                type: 'object',
+                properties: {
+                    section: {
+                        type: 'string',
+                        description: 'Section name to retrieve (e.g. "hormones", "biometrics", "lipids"). Omit to get the section index.',
+                    },
+                },
+            },
+            execute: async (_toolCallId, params) => {
+                const data = await fetchContext(config);
+                if (data.error)
+                    return { error: data.error };
+                if (!data.context)
+                    return { error: 'No context available' };
+                const sectionName = params?.section;
+                if (!sectionName) {
+                    return {
+                        sections: buildSectionIndex(data.context),
+                        updatedAt: data.updatedAt,
+                    };
+                }
+                const sections = parseSections(data.context);
+                const query = sectionName.toLowerCase().trim();
+                // Exact match first, then prefix match (section names may include " updated:date")
+                let matchKey = sections.has(query) ? query : undefined;
+                if (!matchKey) {
+                    for (const k of sections.keys()) {
+                        if (k.toLowerCase().startsWith(query)) {
+                            matchKey = k;
+                            break;
+                        }
+                    }
+                }
+                if (!matchKey) {
+                    const available = Array.from(sections.keys()).map(k => k.split(' ')[0]);
+                    return {
+                        error: `Section "${sectionName}" not found`,
+                        available,
+                    };
+                }
+                return {
+                    section: matchKey,
+                    content: sections.get(matchKey),
                     updatedAt: data.updatedAt,
                 };
             },

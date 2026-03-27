@@ -12,7 +12,9 @@ Query blood work data from getbased (getbased.health). Data is pulled from an E2
 
 ## When to use
 
-Use the `getbased_lab_context` tool when the user asks about their blood work, lab results, biomarkers, health trends, supplements, or health data. This includes questions about specific markers (e.g. "what's my vitamin D?") — the full context contains all marker values.
+Use `getbased_section` (preferred) for focused queries about a specific area — e.g. hormones, lipids, biometrics. Call it with no args first to get the section index, then request the section you need. This is cheaper on tokens and gives you deeper context for the specific area.
+
+Use `getbased_lab_context` when the user asks a broad question that spans multiple areas, or when you need the full picture (e.g. "summarize my latest blood work", "what should I focus on?").
 
 Use `getbased_list_profiles` when they mention multiple profiles or you need to clarify which one.
 

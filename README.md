@@ -25,7 +25,22 @@ Your mnemonic never leaves your browser. The plugin receives the same lab contex
 | Tool | Description |
 |---|---|
 | `getbased_lab_context` | Full lab summary with biomarkers, context cards, supplements, goals |
+| `getbased_section` | Get a specific section (e.g. hormones, lipids) or list all available sections |
 | `getbased_list_profiles` | List available profiles |
+
+### getbased_section
+
+Query-aware context: pull just the section you need instead of the full dump. Saves tokens and allows deeper analysis of specific areas.
+
+```
+# No args — returns section index with names, updated dates, and line counts
+getbased_section()
+
+# With section name — returns just that section's content
+getbased_section(section="hormones")
+```
+
+Section names are matched by prefix, so `hormones` matches `hormones updated:2026-03-13`.
 
 ## Setup
 

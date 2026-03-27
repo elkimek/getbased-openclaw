@@ -4,7 +4,7 @@ interface PluginAPI {
         name: string;
         description: string;
         parameters: object;
-        execute: (input: any) => Promise<any>;
+        execute: (...args: any[]) => Promise<any>;
     }): void;
     registerCli(registrar: (ctx: CliContext) => void, opts?: {
         commands?: string[];
