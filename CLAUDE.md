@@ -18,12 +18,15 @@ No test runner or linter is configured.
 
 ## Architecture
 
-Single-file plugin (`src/index.ts`) that exports a default object with `id`, `configSchema`, and a `register(api)` method — the OpenClaw plugin format. It registers two tools:
+Single-file plugin (`src/index.ts`) that exports a default object with `id`, `configSchema`, and a `register(api)` method — the OpenClaw plugin format. It registers three tools:
 
 - **`getbased_lab_context`** — fetches the full lab summary (biomarkers, context cards, supplements, goals)
+- **`getbased_section`** — returns a specific section by name, or the section index if no name given. Preferred for focused queries
 - **`getbased_list_profiles`** — lists available profiles
 
-Both tools call `fetchContext()` which hits `{gateway}/api/context` with a Bearer token. The gateway URL defaults to `https://sync.getbased.health`.
+All tools call `fetchContext()` which hits `{gateway}/api/context` with a Bearer token. The gateway URL defaults to `https://sync.getbased.health`.
+
+**Important**: OpenClaw passes `(toolCallId, params)` to `execute()`, not just `(input)`. The first argument is always the tool call ID string.
 
 ## OpenClaw plugin API
 
